@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>Audio Recoder</title>
+    <style>
+        body {
+            background: #141414;
+        }
+        #formdiv{
+            display:none;
+        }
+    </style>
+</head>
+
+<body class="text-white">
+    <div class="container text-center">
+        <h1 class="center-align mb-5"> Audio Recorder</h1>
+        <div class="">
+            <button id="recordbtn" class="btn btn-success btn-lg"> <i class="fa fa-microphone"></i> Record</button>
+            <button id="stopbtn" class="btn btn-danger btn-lg"> <i class="fa fa-stop"></i> Stop</button>
+            <button id="playbtn" class="btn btn-primary btn-lg"><i class="fa fa-play"></i> Play</button>
+            <button id="uploadbtn" class="btn btn-secondary btn-lg"><i class="fa fa-file"></i> Upload</button>
+        </div>
+        <br>
+        <div class="col-md-6 mx-auto" id="formdiv">
+            <form>
+                <div class="form-group">
+                    <input type="text" id="name" placeholder="Name">
+                </div>
+                <div class="form-group">
+                    <input type="email" id="email" placeholder="Email">
+                </div>
+                <button id="submitbtn" class="btn btn-succes btn-lg"> Submit</button>
+
+            </form>
+        </div>
+    </div>
+
+    <script>
+        var body = document.querySelector('body')
+        var form = document.querySelector('#formdiv')
+        var recordbtn = document.querySelector('#recordbtn')
+        var playbtn = document.querySelector('#playbtn')
+        var stopbtn = document.querySelector('#stopbtn')
+        var uploadbtn = document.querySelector('#uploadbtn')
+
+        //Function to call when record btn is click
+        recordbtn.addEventListener('click', startRecord)
+        stopbtn.addEventListener('click', stopRecord);
+        playbtn.addEventListener('click', playRecord);
+        uploadbtn.addEventListener('click', uploadAudio);
+
+        function uploadAudio() {
+            console.log('form')
+            form.style.display = 'block'
+            recordbtn.style.display = 'none'
+            stopbtn.style.display = 'none'
+        }
+
+
+        var recording;
+        var mediaRecorder;
+        var audioChunks = [];
+
+        function startRecord() {
+            body.style.background = '#141414 url(../wave.gif)';
+            body.style.backgroundRepeat = 'repeat-x';
+            body.style.backgroundSize = '100% 100%';
+
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    console.log('recorder started')
+                    mediaRecorder = new MediaRecorder(stream);
+                    mediaRecorder.start();
+
+                    mediaRecorder.addEventListener("dataavailable", event => {
+                        audioChunks.push(event.data);
+                    });
+
+                });
+            recording = true
+        }
+        var audioUrl;
+
+        function stopRecord() {
+            console.log('Record stopped')
+            body.style.background = '#141414'
+
+            var stopMediaRecorder = mediaRecorder.addEventListener("stop", () => {
+                var audioBlob = new Blob(audioChunks);
+                audioUrl = URL.createObjectURL(audioBlob);
+
+            });
+            recording = false
+            if (recording = true) {
+                mediaRecorder.stop();
+            }
+        }
+
+        var audio
+        function playRecord() {
+            body.style.background = '#141414 url(../wave.gif)';
+            body.style.backgroundRepeat = 'repeat-x';
+            body.style.backgroundSize = '100% 100%';
+
+            console.log('Playing record')
+            audio = new Audio(audioUrl);
+            audio.play();
+
+        }
+
+
+
+    </script>
+</body>
+
+</html>
